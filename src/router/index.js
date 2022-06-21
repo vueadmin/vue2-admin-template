@@ -1,30 +1,77 @@
-import Vue from "vue";
-import VueRouter from "vue-router";
-import HomeView from "../views/HomeView.vue";
+import Router from "./router";
+import NProgress from "nprogress";
+import Store from "../store/";
+// import { navigation } from "@/router/routes";
+// import { cloneDeep as _cloneDeep } from "lodash";
+import Permission from "@/utils/Permission";
+import { ls } from "@/utils/Storage";
+// import { PRIMARY_LOCALE } from "@/config/constants";
+// import { loadLanguage } from '@/i18n';
 
-Vue.use(VueRouter);
+NProgress.configure({ showSpinner: false });
 
-const routes = [
-  {
-    path: "/",
-    name: "home",
-    component: HomeView,
-  },
-  {
-    path: "/about",
-    name: "about",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/AboutView.vue"),
-  },
-];
+Router.beforeEach(async (to, from, next) => {
+  /**
+   * NProgress
+   */
+  if (to.meta && !to.meta.hideProgress) {
+    NProgress.start();
+  }
 
-const router = new VueRouter({
-  mode: "history",
-  base: process.env.BASE_URL,
-  routes,
+  /**
+   * 权限
+   */
+  // 已登录
+  if (Permission.isLogin()) {
+    // 不允许已登录状态下再次进入登录页
+    if (to.name === "Login") {
+      next({ name: "Index" });
+    }
+
+    // 保存用户信息至 vuex
+    if (!Store.state.user.userInfo.id) {
+      Store.commit("user/STORE_USER_INFO", ls.get("user"));
+    }
+  }
+  // 未登录
+  else {
+    // 强制重定向到登录页
+    if (to.name !== "Login") {
+      next({ name: "Login" });
+    }
+  }
+
+  /**
+   * 视图
+   */
+  // 保存导航栏至 vuex
+  // if (!Store.state.view.isNavigationSaved) {
+  //   Store.commit("view/STORE_NAVIGATION", _cloneDeep(navigation));
+  // }
+
+  // Store.commit("view/UNSET_CUSTOM_BREADCRUMB");
+  // Store.commit(
+  //   "view/UPDATE_HOME_BREADCRUMB_VISIBLE",
+  //   to.meta && !to.meta.hideHomeBreadcrumb
+  // );
+
+  /**
+   * 浏览器标签页标题
+   */
+  const routeTitle =
+    to.meta && !to.meta.hideTitleInBrowserTab && to.meta.title
+      ? to.meta.title
+      : null;
+  document.title = routeTitle
+    ? `${routeTitle} - ${process.env.VUE_APP_PROJECT_NAME}`
+    : `${process.env.VUE_APP_PROJECT_NAME}`;
+
+  next();
 });
 
-export default router;
+Router.afterEach(() => {
+  window.scrollTo(0, 0);
+  NProgress.done();
+});
+
+export default Router;
