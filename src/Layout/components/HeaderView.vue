@@ -1,7 +1,5 @@
 <template>
-  <div class="header">
-    <el-button type="primary">链接钱包</el-button>
-  </div>
+  <div class="header"></div>
 </template>
 
 <script>

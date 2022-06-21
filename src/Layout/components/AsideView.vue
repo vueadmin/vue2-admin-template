@@ -3,6 +3,7 @@
     <el-menu
       :default-active="defaultActive"
       router
+      @select="handleSelect"
       @open="handleOpen"
       @close="handleClose"
     >
@@ -11,8 +12,8 @@
         :index="route.path"
         :key="route.path"
       >
-        <i :class="route.mate.icon"></i>
-        <span slot="title">{{ route.mate.title }}</span>
+        <i :class="route.meta.icon"></i>
+        <span slot="title">{{ route.meta.title }}</span>
       </el-menu-item>
     </el-menu>
   </div>
@@ -23,7 +24,7 @@ export default {
   name: "AsideView",
   data() {
     return {
-      defaultActive: "/token",
+      defaultActive: "/index",
       routes: [],
     };
   },
@@ -35,6 +36,9 @@ export default {
       console.log(key, keyPath);
     },
     handleClose(key, keyPath) {
+      console.log(key, keyPath);
+    },
+    handleSelect(key, keyPath) {
       console.log(key, keyPath);
     },
   },
