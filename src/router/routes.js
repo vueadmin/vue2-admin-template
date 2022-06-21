@@ -29,7 +29,7 @@ export default [
   {
     path: "/login",
     name: "Login",
-    component: _import("login/Index"),
+    component: _import("Login/Index"),
     meta: new IRouteMeta({ title: "登录" }),
   },
   { path: "*", redirect: { name: "Error404" } },
