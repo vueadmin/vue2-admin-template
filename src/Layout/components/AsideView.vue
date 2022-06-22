@@ -24,7 +24,7 @@ export default {
   name: "AsideView",
   data() {
     return {
-      defaultActive: "/index",
+      defaultActive: "/order",
       routes: [],
     };
   },
